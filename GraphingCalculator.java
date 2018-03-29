@@ -57,7 +57,9 @@ public class GraphingCalculator implements Calculator, ActionListener
 	JTextArea       errorDisplay     = new JTextArea("Errors will be displayed here");
 	JTextField      expressionEntry  = new JTextField("Enter an expression here");
 	JTextField      xValueEntry      = new JTextField();
+	JTextField		deltaXEntry		 = new JTextField();
 	JLabel		    xValueLabel      = new JLabel("For X =");
+	JLabel			deltaXLabel		 = new JLabel("Delta X: ");
 	JButton         clearButton      = new JButton("Clear");
     JButton         recallButton     = new JButton("Recall");
 
@@ -73,7 +75,7 @@ public class GraphingCalculator implements Calculator, ActionListener
 	private final Set<Character> doNotCheckSet = new HashSet<Character>(Arrays.asList(' ', '('));                       // Set of characters to avoid recalling for checking against implicit multiplication
 	
 	
-	public ExpressionCalculator()
+	public GraphingCalculator()
 	{
 		calculatorWindow.getContentPane().add(buttonPanel, RIGHT);
 			buttonPanel.setLayout(new GridLayout(2,1));
@@ -84,10 +86,13 @@ public class GraphingCalculator implements Calculator, ActionListener
 			entryPanel.add(expressionPanel);
 			entryPanel.add(errorDisplay);
 			errorDisplay.setEditable(false);
-			expressionPanel.setLayout(new GridLayout(1, 2));
+			expressionPanel.setLayout(new GridLayout(1, 3));//1,2
 			expressionPanel.add(varPanel);
 			expressionPanel.add(expressionEntry);
-			varPanel.setLayout(new GridLayout(1,2));
+			varPanel.setLayout(new GridLayout(1,4));
+			varPanel.add(deltaXLabel);
+			deltaXLabel.setHorizontalAlignment(JLabel.RIGHT);
+			varPanel.add(deltaXEntry);
 			varPanel.add(xValueLabel);
 			xValueLabel.setHorizontalAlignment(JLabel.RIGHT);
 			varPanel.add(xValueEntry);
@@ -473,6 +478,6 @@ public class GraphingCalculator implements Calculator, ActionListener
 	public static void main(String[] args) throws Exception
 	{
 		System.out.println("ExpressionCalculator.java was created by Paul Leimer and Sam Messick for ECE 309\nExpressions can be evaluated with complex numbers and a unary minus character as well\nso give it a go!");
-		new ExpressionCalculator();
+		new GraphingCalculator();
 	}
 }
