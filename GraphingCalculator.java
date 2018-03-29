@@ -48,6 +48,7 @@ public class GraphingCalculator implements Calculator, ActionListener
 	/* ---GUI objects--- */
 	JFrame          calculatorWindow = new JFrame("Expression Calculator"); 
 	JFrame 			graphWindow;
+	RefreshGraphPanel graphPanel;
 	JPanel          buttonPanel      = new JPanel();
 	JPanel          entryPanel       = new JPanel();
 	JPanel          expressionPanel  = new JPanel();
@@ -207,6 +208,10 @@ public class GraphingCalculator implements Calculator, ActionListener
 						
 						//build graph window
 						graphWindow = new JFrame(expressionEntry.getText());
+						
+						graphPanel	 = new RefreshGraphPanel(expressionEntry.getText(), new double[0], new double[0]);
+						graphWindow.getContentPane().add(graphPanel, "Center");
+						
 						graphWindow.setLocation(0, 0);
 						graphWindow.setSize(500, 400);
 						graphWindow.setVisible(true);
