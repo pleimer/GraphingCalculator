@@ -28,13 +28,16 @@ public class RefreshGraphPanel extends JPanel implements MouseListener {
 	    int windowHeight = this.getHeight(); 
 	    
 	    super.paint(g);
-		g.setFont(new Font("Times Roman", Font.BOLD, 15));
+		g.setFont(new Font("Times Roman", Font.PLAIN, 12));
 	    //draw x-axis
 	    int x_axis_length_pxls = windowWidth - 50; //50 pixle buffer margin on either side
 	    int deltaP = x_axis_length_pxls / xValues.length;
 	    
 	    for(int i=0;i<xValues.length;i++) {
 	    	g.drawString("|", 50 + deltaP*i, windowHeight);
+	    }
+	    g.setFont(new Font("Times Roman", Font.PLAIN, 10));
+	    for(int i=0;i<xValues.length;i++) {
 	    	g.drawString(Double.toString(xValues[i]), 55 + deltaP*i, windowHeight-1);
 	    }
 	    		
