@@ -47,6 +47,7 @@ public class GraphingCalculator implements Calculator, ActionListener
 
 	/* ---GUI objects--- */
 	JFrame          calculatorWindow = new JFrame("Expression Calculator"); 
+	JFrame 			graphWindow;
 	JPanel          buttonPanel      = new JPanel();
 	JPanel          entryPanel       = new JPanel();
 	JPanel          expressionPanel  = new JPanel();
@@ -176,7 +177,44 @@ public class GraphingCalculator implements Calculator, ActionListener
 								resultsDisplay.append(expressionEntry.getText() + " = " + result.imag + "i \n");
 						else
 							resultsDisplay.append(expressionEntry.getText() + " = " + result.real + "\n");
+					
+					if (!deltaXEntry.getText().isEmpty()) {
+						//does expression have x?
+						// is delta x > 0?
+						//open new graphing window
+						errorDisplay.setText(""); //just in case other errors were shown before
+						errorDisplay.setBackground(Color.white);
+						try {
+							if (!expressionEntry.getText().contains("x")) {
+								throw new Exception("Expression does not contain symbolic x value for graphing");
+							}
+							if (Double.parseDouble(deltaXEntry.getText()) < 0) {
+								throw new Exception("Delta x value cannot be negative.");
+							}
+						}
+						catch (Exception e) {
+							errorDisplay.setText(e.toString());
+							expressionEntry.setText("");
+							errorDisplay.setBackground(Color.pink);
+							if(!parStack.isEmpty())
+							{
+								// Clear parentheses stack
+								while(!parStack.isEmpty())
+								parStack.pop();
+							}
+							return;
+						}
+						
+						//build graph window
+						graphWindow = new JFrame(expressionEntry.getText());
+						graphWindow.setLocation(0, 0);
+						graphWindow.setSize(500, 400);
+						graphWindow.setVisible(true);
+						graphWindow.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+					}
+					
 					expressionEntry.setText("");
+					
 				}
 			}
 		});
