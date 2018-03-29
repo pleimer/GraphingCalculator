@@ -209,7 +209,10 @@ public class GraphingCalculator implements Calculator, ActionListener
 						//build graph window
 						graphWindow = new JFrame(expressionEntry.getText());
 						
-						graphPanel	 = new RefreshGraphPanel(expressionEntry.getText(), new double[0], new double[0]);
+						graphPanel	 = new RefreshGraphPanel(expressionEntry.getText(),
+															 CalculateXAxisValues(Double.parseDouble(xValueEntry.getText()), Double.parseDouble(deltaXEntry.getText())),
+															 new double[0]);
+						graphPanel.setBackground(Color.white);
 						graphWindow.getContentPane().add(graphPanel, "Center");
 						
 						graphWindow.setLocation(0, 0);
@@ -248,6 +251,28 @@ public class GraphingCalculator implements Calculator, ActionListener
 			expressionEntry.setText(lastExpressionEntered);
 			expressionEntry.requestFocusInWindow();
 		}
+	}
+	
+	public double[] CalculateXAxisValues(double startPoint, double delta) {
+		boolean hasZero = false;
+		
+		for (int i=0;i<11;i++) {
+			if ((startPoint + delta*i)==0) hasZero = true;
+		}
+		
+		if (hasZero) {
+			double[] x_vals = new double[11];
+			for(int i=0;i<11;i++) {
+				x_vals[i] = startPoint + delta*i;
+			}
+			return x_vals;
+		}
+		
+		double[] x_vals = new double[10];
+		for(int i=0;i<10;i++) {
+			x_vals[i] = startPoint + delta*i;
+		}
+		return x_vals;
 	}
 
 	@Override

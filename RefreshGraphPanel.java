@@ -1,3 +1,4 @@
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -26,7 +27,19 @@ public class RefreshGraphPanel extends JPanel implements MouseListener {
 	    int windowWidth  = this.getWidth();
 	    int windowHeight = this.getHeight(); 
 	    
+	    super.paint(g);
+		g.setFont(new Font("Times Roman", Font.BOLD, 15));
+	    //draw x-axis
+	    int x_axis_length_pxls = windowWidth - 50; //50 pixle buffer margin on either side
+	    int deltaP = x_axis_length_pxls / xValues.length;
+	    
+	    for(int i=0;i<xValues.length;i++) {
+	    	g.drawString("|", 50 + deltaP*i, windowHeight);
+	    	g.drawString(Double.toString(xValues[i]), 55 + deltaP*i, windowHeight-1);
+	    }
+	    		
 	    System.out.println("Current graph size is " + windowWidth + " x " + windowHeight);
+	    System.out.println(xValues.length);
 	}
 	
 	@Override
