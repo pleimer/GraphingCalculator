@@ -1,3 +1,4 @@
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -13,10 +14,15 @@ public class RefreshGraphPanel extends JPanel implements MouseListener {
 	double[] yValues;
 	String[] yPrintValues;
 	
+	int[][] functPointLocations;
 	
 	int xBase = 15;
 	int yBase = 15;
 	int rightMargin = 15;
+	int topMargin = 0;
+	
+	double yMin;
+	double yMax;
 	
 	public RefreshGraphPanel(//GraphingCalculator gc,
 							 String		expression,
@@ -26,7 +32,22 @@ public class RefreshGraphPanel extends JPanel implements MouseListener {
 		this.expression = expression;
 		this.xValues = xValues;
 		this.yValues = yValues;
-		this.yPrintValues = calcYAxisPrintValues(yValues);
+		
+		  //find min and max
+		  yMax = yValues[0];
+		  yMin = yValues[0];
+		  for(int i=0;i<yValues.length; i++) {
+			  if(yValues[i] > yMax) yMax = yValues[i];
+			  if(yValues[i] < yMin) yMin = yValues[i];
+		  }
+		
+		this.yPrintValues = calcYAxisPrintValues(yMin, yMax);
+		for(String item: yPrintValues) {
+			System.out.println(item);
+		}
+		
+		
+		this.functPointLocations = new int[xValues.length][yValues.length];
 		
 		this.addMouseListener(this);
 	}
@@ -48,49 +69,63 @@ public class RefreshGraphPanel extends JPanel implements MouseListener {
 	    //draw x-axis
 	    int x_axis_length_pxls = winWidth - xBase - rightMargin; 
 	    int deltaPX = x_axis_length_pxls / xValues.length;
+	    int xConversionFactor;
 	  
 	    //draw x-axis
 	    for(int i=0;i<xValues.length;i++) {
-	    	g.drawString("|", xBase + deltaPX*i, winHeight);
+	    	xConversionFactor = xBase + deltaPX*i;
+	    	g.drawString("|", xConversionFactor, winHeight);
+	    	functPointLocations[i][0] = xConversionFactor;
 	    }
 	    
 	    g.setFont(new Font("Times Roman", Font.PLAIN, 10));
 	    for(int i=0;i<xValues.length;i++) {
-	    	g.drawString(Double.toString(xValues[i]), xBase + 5 + deltaPX*i, winHeight-1);
+	    	xConversionFactor = xBase + deltaPX*i;
+	    	g.drawString(Double.toString(xValues[i]), xConversionFactor + 5, winHeight-1);
 	    }
 	    
 	    //draw y axis
-	    int y_axis_length_pxls = winWidth - yBase - rightMargin; 
+	    int y_axis_length_pxls = winHeight - yBase - topMargin; 
 	    System.out.println(yPrintValues.length);
 	    int deltaPY = y_axis_length_pxls / yPrintValues.length;
 	    
 	    int yConversionFactor;
 	    
 	    g.setFont(new Font("Times Roman", Font.PLAIN, 10));
-	    for(int i=0;i<xValues.length;i++) {
+	    for(int i=0;i<yPrintValues.length;i++) {
 	    	yConversionFactor = winHeight - yBase - deltaPY*i;
-	    	g.drawString(yPrintValues[i], 1 , yConversionFactor - 5);
+	    	g.drawString(yPrintValues[i], 1 , yConversionFactor - 3);
 	    }
 	    
-	    for(int i=0;i<xValues.length;i++) {
+	    for(int i=0;i<yPrintValues.length;i++) {
 	    	yConversionFactor = winHeight - yBase - deltaPY*i;
 	    	g.drawLine(0, yConversionFactor, 8, yConversionFactor);
 	    }  
 	    
-	    //graph points 
+	    //calculate y points on grapg
+	    Double axis_Min = Double.parseDouble( yPrintValues[0]);
+	    Double axis_Max = Double.parseDouble(yPrintValues[yPrintValues.length - 1]);
+	    
+	    double rangeRatio, axisPxls;
+	    double totalValidGraphPixels = deltaPY * axis_Max;
+	    for(int i=0;i<xValues.length;i++) {
+	    	rangeRatio = (yValues[i]- axis_Min)/(axis_Max - axis_Min);
+	    	axisPxls = rangeRatio * totalValidGraphPixels;	    	
+	    	functPointLocations[i][1] =  winHeight - yBase - (int) Math.round(axisPxls);
+	    }
+	    
+	    //graph points
+	    g.setColor(Color.red);
+	    for(int i=0; i < xValues.length; i++) {
+	    	g.drawOval(functPointLocations[i][0]-1,functPointLocations[i][1]-1,2,2);//draw dots
+	    	if(i+1 < xValues.length)
+	    		g.drawLine(functPointLocations[i][0], functPointLocations[i][1], functPointLocations[i + 1][0], functPointLocations[i+1][1]);
+	    }
 	}
 	
-	public String[] calcYAxisPrintValues(double[] yValues){
+	public String[] calcYAxisPrintValues(double yMin, double yMax){
 		
-	  double dPlotRange, yMin, yMax;
-	  
-	  //find min and max
-	  yMax = yValues[0];
-	  yMin = yValues[0];
-	  for(int i=0;i<yValues.length; i++) {
-		  if(yValues[i] > yMax) yMax = yValues[i];
-		  if(yValues[i] < yMin) yMin = yValues[i];
-	  }
+	  double dPlotRange;
 	  
 	  int    plotRange, initialIncrement, upperIncrement, 
 	         lowerIncrement, selectedIncrement, numberOfYscaleValues,

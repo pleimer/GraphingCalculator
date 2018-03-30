@@ -69,8 +69,7 @@ public class GraphingCalculator implements Calculator, ActionListener
 	private boolean x_used;
 	private Complex result = new Complex(0, 0);
 	private String  lastExpressionEntered      = "";
-	private String  lastXvalueEntered          = "";
-	private Stack<Double>        rpnStack 	   = new Stack<>(); 														// Will allow us to use Reverse Polish Notation
+	private String  lastXvalueEntered          = "";														// Will allow us to use Reverse Polish Notation
 	private Stack<Integer>       parStack      = new Stack<>(); 														// Keeps index of right parentheses for splitting string
 	private LinkedList<Complex>       compStack     = new LinkedList<>();															// Stack for storing results from rpn parsing
 	private final Set<Character> operators     = new HashSet<Character>(Arrays.asList('+', '-', '*', '/', 'r', '^'));   // Set of valid operators for checking against implicit multiplication
@@ -255,13 +254,17 @@ public class GraphingCalculator implements Calculator, ActionListener
 	}
 	
 	public double[] CalculateYAxisValues() {
-		// this is called after the points of the graph are calculated,
-		// so that proper Y axis values can be properly determined,
-		// the please
+		//compute the y axis values for each x in the given expression
+		//right now, it is returning a test vector
+		//so CHANGE THIS
 		double[] y_vals = new double[12];
 		for(int i=0;i<12;i++) {
 			y_vals[i] = i;
 		}
+		
+		y_vals[6] = 2;
+		y_vals[7] = 1;
+		y_vals[9] = 14;
 		return y_vals;
 	}
 	
