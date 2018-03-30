@@ -209,9 +209,10 @@ public class GraphingCalculator implements Calculator, ActionListener
 						//build graph window
 						graphWindow = new JFrame(expressionEntry.getText());
 						
-						graphPanel	 = new RefreshGraphPanel(expressionEntry.getText(),
-															 CalculateXAxisValues(Double.parseDouble(xValueEntry.getText()), Double.parseDouble(deltaXEntry.getText())),
-															 new double[0]);
+						graphPanel	= new RefreshGraphPanel(expressionEntry.getText(),
+															CalculateXAxisValues(Double.parseDouble(xValueEntry.getText()), Double.parseDouble(deltaXEntry.getText())),
+															CalculateYAxisValues());
+						
 						graphPanel.setBackground(Color.white);
 						graphWindow.getContentPane().add(graphPanel, "Center");
 						
@@ -253,6 +254,17 @@ public class GraphingCalculator implements Calculator, ActionListener
 		}
 	}
 	
+	public double[] CalculateYAxisValues() {
+		// this is called after the points of the graph are calculated,
+		// so that proper Y axis values can be properly determined,
+		// the please
+		double[] y_vals = new double[12];
+		for(int i=0;i<12;i++) {
+			y_vals[i] = i;
+		}
+		return y_vals;
+	}
+	
 	public double[] CalculateXAxisValues(double startPoint, double delta) {
 		boolean hasZero = false;
 		
@@ -280,6 +292,7 @@ public class GraphingCalculator implements Calculator, ActionListener
 	{
 		if(expression.startsWith("+"))
 			throw new Exception("Unary \'+\' not supported. Please consider the delightful unary \'-\' as an alternative.");
+		
 		double tmpResult;
 		
 		// Save expression and x value
