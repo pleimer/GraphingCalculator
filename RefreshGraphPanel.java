@@ -20,7 +20,7 @@ public class RefreshGraphPanel extends JPanel implements MouseListener {
 	
 	int xBase = 15;
 	int yBase = 15;
-	int rightMargin = 15;
+	int rightMargin = 0;
 	int topMargin = 0;
 	
 	double yMin;
@@ -92,6 +92,12 @@ public class RefreshGraphPanel extends JPanel implements MouseListener {
 	    //draw x-axis
 	    for(int i=0;i<xValues.length;i++) {
 	    	xConversionFactor = xBase + deltaPX*i;
+	    	
+	    	if(xValues[i] == 0) {
+	    		g.setColor(Color.green);
+	    		g.drawLine((int)xConversionFactor + 1, 0, (int) xConversionFactor + 1, winHeight);
+	    		g.setColor(Color.black);
+	    	}
 	    	g.drawString("|", (int) xConversionFactor, winHeight);
 	    	functPointLocations[i][0] = (int) xConversionFactor;
 	    }
@@ -117,6 +123,12 @@ public class RefreshGraphPanel extends JPanel implements MouseListener {
 	    for(int i=0;i<yPrintValues.length;i++) {
 	    	yConversionFactor = winHeight - yBase - deltaPY*i;
 	    	g.drawLine(0, yConversionFactor, 8, yConversionFactor);
+	    	
+	    	if(Double.parseDouble(yPrintValues[i]) == 0) {
+	    		g.setColor(Color.green);
+	    		g.drawLine(xBase, (int)yConversionFactor, winWidth - rightMargin, (int) yConversionFactor);
+	    		g.setColor(Color.black);
+	    	}
 	    }  
 	    
 	    //calculate y points on graph
