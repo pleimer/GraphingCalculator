@@ -79,7 +79,7 @@ public class RefreshGraphPanel extends JPanel implements MouseListener {
 
 	    drawGraph(expression, windowWidth, windowHeight, g);
 	
-	    System.out.println("Current graph size is " + windowWidth + " x " + windowHeight);
+	   // System.out.println("Current graph size is " + windowWidth + " x " + windowHeight);
 	}
 	
 	public void drawGraph(String expression, int winWidth, int winHeight, Graphics g) {
@@ -104,8 +104,7 @@ public class RefreshGraphPanel extends JPanel implements MouseListener {
 	    
 	    //draw y axis
 	    int y_axis_length_pxls = winHeight - yBase - topMargin; 
-	    System.out.println(yPrintValues.length);
-	    int deltaPY = y_axis_length_pxls / yPrintValues.length;
+	    int deltaPY = y_axis_length_pxls / yPrintValues.length; //deltaPY is how many pixels between each Y point on graph
 	    
 	    int yConversionFactor;
 	    
@@ -123,9 +122,12 @@ public class RefreshGraphPanel extends JPanel implements MouseListener {
 	    //calculate y points on graph
 	    Double axis_Min = Double.parseDouble( yPrintValues[0]);
 	    Double axis_Max = Double.parseDouble(yPrintValues[yPrintValues.length - 1]);
+	    System.out.println("Y print values");
+	    for (double item: yValues)
+	    	System.out.println(item);
 	    
 	    double rangeRatio, axisPxls;
-	    double totalValidGraphPixels = deltaPY * axis_Max;
+	    double totalValidGraphPixels = deltaPY * (yPrintValues.length - 1);
 	    for(int i=0;i<xValues.length;i++) {
 	    	rangeRatio = (yValues[i]- axis_Min)/(axis_Max - axis_Min);
 	    	axisPxls = rangeRatio * totalValidGraphPixels;	    	
