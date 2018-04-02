@@ -39,6 +39,9 @@ public class GraphingCalculator implements Calculator, ActionListener
 		}
 	}
 	
+	//for passing to constructor in expressionEntry method
+	GraphingCalculator gc;
+	
 	/* --- Constants --- */
     final String CENTER = "Center";
 	final String TOP    = "North";
@@ -78,6 +81,7 @@ public class GraphingCalculator implements Calculator, ActionListener
 	
 	public GraphingCalculator()
 	{
+		gc = this;
 		calculatorWindow.getContentPane().add(buttonPanel, RIGHT);
 			buttonPanel.setLayout(new GridLayout(2,1));
 			buttonPanel.add(clearButton);
@@ -210,7 +214,7 @@ public class GraphingCalculator implements Calculator, ActionListener
 						
 						try
 						{
-						graphPanel	= new RefreshGraphPanel(new GraphingCalculator(), expressionEntry.getText(),
+						graphPanel	= new RefreshGraphPanel(gc, expressionEntry.getText(),
 															CalculateXAxisValues(Double.parseDouble(xValueEntry.getText()), Double.parseDouble(deltaXEntry.getText())),
 															CalculateYAxisValues(Double.parseDouble(xValueEntry.getText()), Double.parseDouble(deltaXEntry.getText())));
 						} catch(Exception e){
