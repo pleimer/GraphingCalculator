@@ -36,7 +36,7 @@ public class RefreshGraphPanel extends JPanel implements MouseListener {
 	public RefreshGraphPanel(GraphingCalculator gc,
 							 String		expression,
 							 double[] 	xValues,
-							 double[] 	yValues) throws IllegalArgumentException {
+							 double[] 	yValues) throws IllegalArgumentException, Exception {
 		
 		this.gc = gc;
 		this.expression = expression;
@@ -134,9 +134,6 @@ public class RefreshGraphPanel extends JPanel implements MouseListener {
 	    //calculate y points on graph
 	    Double axis_Min = Double.parseDouble( yPrintValues[0]);
 	    Double axis_Max = Double.parseDouble(yPrintValues[yPrintValues.length - 1]);
-	    System.out.println("Y print values");
-	    for (double item: yValues)
-	    	System.out.println(item);
 	    
 	    double rangeRatio, axisPxls;
 	    double totalValidGraphPixels = deltaPY * (yPrintValues.length - 1);
@@ -155,7 +152,7 @@ public class RefreshGraphPanel extends JPanel implements MouseListener {
 	    }
 	}
 	
-	public String[] calcYAxisPrintValues(double yMin, double yMax){
+	public String[] calcYAxisPrintValues(double yMin, double yMax) throws Exception{
 		
 	  double dPlotRange;
 	  
@@ -174,10 +171,8 @@ public class RefreshGraphPanel extends JPanel implements MouseListener {
 		 plotRange = (int)dPlotRange;
 		 System.out.println("Rounded plot range = " + plotRange);
 	     }
-	  else
-	     {
-		 System.out.println("Add handling of small plot range!");
-		 return new String[0];
+	 else {
+		 throw new Exception("Function range too small to graph. ");
 	     }
 	/*ASSUME*/ // 10 scale values as a starting assumption.
 	  initialIncrement = plotRange/10;
@@ -235,7 +230,6 @@ public class RefreshGraphPanel extends JPanel implements MouseListener {
 		 System.out.println("Number of Y scale click marks is too few or too many!");
 		 return new String[0]; //empty string
 	     }
-	  
 	  // 7) Determine if Y scale will be extended to include the 0 point.
 	  if ((lowestYscaleValue < 0) && (highestYscaleValue > 0))
 	       System.out.println("The Y scale includes the 0 point.");
