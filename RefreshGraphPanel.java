@@ -6,6 +6,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.geom.AffineTransform;
 
+import javax.swing.JTextField;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 public class RefreshGraphPanel extends JPanel implements MouseListener {
@@ -23,15 +25,24 @@ public class RefreshGraphPanel extends JPanel implements MouseListener {
 	
 	double yMin;
 	double yMax;
+	double deltaX;
 	
-	public RefreshGraphPanel(//GraphingCalculator gc,
+	JFrame          coordWindow = new JFrame();
+	JTextField      xCoord      = new JTextField();
+	JTextField      yCoord      = new JTextField();
+	
+	GraphingCalculator gc;
+	
+	public RefreshGraphPanel(GraphingCalculator gc,
 							 String		expression,
 							 double[] 	xValues,
 							 double[] 	yValues) throws IllegalArgumentException {
 		
+		this.gc = gc;
 		this.expression = expression;
 		this.xValues = xValues;
 		this.yValues = yValues;
+		this.deltaX  = xValues[1] - xValues [0];
 		
 		  //find min and max
 		  yMax = yValues[0];
@@ -48,6 +59,13 @@ public class RefreshGraphPanel extends JPanel implements MouseListener {
 		
 		
 		this.functPointLocations = new int[xValues.length][yValues.length];
+		
+		// Window for displaying points from mouse press
+		coordWindow.getContentPane().add(xCoord, "North");
+		coordWindow.getContentPane().add(yCoord, "South");
+		coordWindow.setLocation(0,0);
+		coordWindow.setSize(300, 100);
+		coordWindow.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		
 		this.addMouseListener(this);
 	}
@@ -69,19 +87,19 @@ public class RefreshGraphPanel extends JPanel implements MouseListener {
 	    //draw x-axis
 	    int x_axis_length_pxls = winWidth - xBase - rightMargin; 
 	    int deltaPX = x_axis_length_pxls / xValues.length;
-	    int xConversionFactor;
+		double xConversionFactor;
 	  
 	    //draw x-axis
 	    for(int i=0;i<xValues.length;i++) {
 	    	xConversionFactor = xBase + deltaPX*i;
-	    	g.drawString("|", xConversionFactor, winHeight);
-	    	functPointLocations[i][0] = xConversionFactor;
+	    	g.drawString("|", (int) xConversionFactor, winHeight);
+	    	functPointLocations[i][0] = (int) xConversionFactor;
 	    }
 	    
 	    g.setFont(new Font("Times Roman", Font.PLAIN, 10));
 	    for(int i=0;i<xValues.length;i++) {
 	    	xConversionFactor = xBase + deltaPX*i;
-	    	g.drawString(Double.toString(xValues[i]), xConversionFactor + 5, winHeight-1);
+	    	g.drawString(Double.toString(xValues[i]), (int) xConversionFactor + 5, winHeight-1);
 	    }
 	    
 	    //draw y axis
@@ -102,7 +120,7 @@ public class RefreshGraphPanel extends JPanel implements MouseListener {
 	    	g.drawLine(0, yConversionFactor, 8, yConversionFactor);
 	    }  
 	    
-	    //calculate y points on grapg
+	    //calculate y points on graph
 	    Double axis_Min = Double.parseDouble( yPrintValues[0]);
 	    Double axis_Max = Double.parseDouble(yPrintValues[yPrintValues.length - 1]);
 	    
@@ -234,9 +252,7 @@ public class RefreshGraphPanel extends JPanel implements MouseListener {
 	}      
 	
 	@Override
-	public void mouseClicked(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-
+	public void mouseClicked(MouseEvent me) {
 	}
 
 	@Override
@@ -252,15 +268,25 @@ public class RefreshGraphPanel extends JPanel implements MouseListener {
 	}
 
 	@Override
-	public void mousePressed(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-
+	public void mousePressed(MouseEvent me) {
+		// Draw x, y coordinate of function at x-value of pressed point
+		double xInPixels = me.getX() - xBase - rightMargin;
+		double xFraction = (xInPixels / (xInPixels - xBase - rightMargin));
+		double xValue = xValues[0] + (deltaX) * (xFraction * xValues.length); 
+		double yValue;
+		System.out.println("X = " + xValues[0] + "X2 = " + xValues[1]);
+		try
+		{
+			yValue = gc.calculate(expression, Double.toString(xValue));
+		} catch(Exception e){return;}
+		xCoord.setText("X = " + Double.toString(xValue));
+		yCoord.setText("Y = " + Double.toString(yValue));
+		coordWindow.setVisible(true);
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-
+		coordWindow.setVisible(false);
 	}
 
 }

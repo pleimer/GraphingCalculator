@@ -208,12 +208,25 @@ public class GraphingCalculator implements Calculator, ActionListener
 						//build graph window
 						graphWindow = new JFrame(expressionEntry.getText());
 						
-						graphPanel	= new RefreshGraphPanel(expressionEntry.getText(),
+						try
+						{
+						graphPanel	= new RefreshGraphPanel(new GraphingCalculator(), expressionEntry.getText(),
 															CalculateXAxisValues(Double.parseDouble(xValueEntry.getText()), Double.parseDouble(deltaXEntry.getText())),
-															CalculateYAxisValues());
-						
+															CalculateYAxisValues(Double.parseDouble(xValueEntry.getText()), Double.parseDouble(deltaXEntry.getText())));
+						} catch(Exception e){
+							errorDisplay.setText(e.toString());
+							expressionEntry.setText("");
+							errorDisplay.setBackground(Color.pink);
+							if(!parStack.isEmpty())
+							{
+								// Clear parentheses stack
+								while(!parStack.isEmpty())
+								parStack.pop();
+							}
+							return;
+						}
 						graphPanel.setBackground(Color.white);
-						graphWindow.getContentPane().add(graphPanel, "Center");
+						graphWindow.getContentPane().add(graphPanel, CENTER);
 						
 						graphWindow.setLocation(0, 0);
 						graphWindow.setSize(500, 400);
@@ -253,18 +266,14 @@ public class GraphingCalculator implements Calculator, ActionListener
 		}
 	}
 	
-	public double[] CalculateYAxisValues() {
+	public double[] CalculateYAxisValues(double startPoint, double delta) throws Exception {
 		//compute the y axis values for each x in the given expression
 		//right now, it is returning a test vector
 		//so CHANGE THIS
 		double[] y_vals = new double[12];
 		for(int i=0;i<12;i++) {
-			y_vals[i] = i;
+			y_vals[i] = calculate(expressionEntry.getText(), Double.toString(startPoint+i*delta));
 		}
-		
-		y_vals[6] = 2;
-		y_vals[7] = 1;
-		y_vals[9] = 14;
 		return y_vals;
 	}
 	
