@@ -137,9 +137,9 @@ public class RefreshGraphPanel extends JPanel implements MouseListener {
 	    //graph points
 	    g.setColor(Color.red);
 	    for(int i=0; i < xValues.length; i++) {
-	    	g.drawOval(functPointLocations[i][0]-1,functPointLocations[i][1]-1,2,2);//draw dots
+	    	g.drawOval(functPointLocations[i][0],functPointLocations[i][1],2,2);//draw dots
 	    	if(i+1 < xValues.length)
-	    		g.drawLine(functPointLocations[i][0], functPointLocations[i][1], functPointLocations[i + 1][0], functPointLocations[i+1][1]);
+	    		g.drawLine(functPointLocations[i][0]+1, functPointLocations[i][1]+1, functPointLocations[i + 1][0]+1, functPointLocations[i+1][1]+1);
 	    }
 	}
 	
@@ -273,10 +273,10 @@ public class RefreshGraphPanel extends JPanel implements MouseListener {
 	public void mousePressed(MouseEvent me) {
 		// Draw x, y coordinate of function at x-value of pressed point
 		double xInPixels = me.getX() - xBase;
-		double xFraction = (xInPixels / (this.getWidth() - xBase));
+		double xFraction = (xInPixels / (this.getWidth() - xBase - rightMargin));
 		double xValue = xValues[0] + (deltaX) * (xFraction * xValues.length); 
 		double yValue;
-		System.out.println("X = " + xValues[0] + "X2 = " + xValues[1]);
+		//System.out.println("X = " + xValues[0] + " X2 = " + xValues[1]);
 		try
 		{
 			yValue = gc.calculate(expression, Double.toString(xValue));
