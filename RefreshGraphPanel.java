@@ -270,8 +270,8 @@ public class RefreshGraphPanel extends JPanel implements MouseListener {
 	@Override
 	public void mousePressed(MouseEvent me) {
 		// Draw x, y coordinate of function at x-value of pressed point
-		double xInPixels = me.getX() - xBase - rightMargin;
-		double xFraction = (xInPixels / (xInPixels - xBase - rightMargin));
+		double xInPixels = me.getX() - xBase;
+		double xFraction = (xInPixels / (this.getWidth() - xBase));
 		double xValue = xValues[0] + (deltaX) * (xFraction * xValues.length); 
 		double yValue;
 		System.out.println("X = " + xValues[0] + "X2 = " + xValues[1]);
