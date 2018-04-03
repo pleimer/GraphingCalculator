@@ -170,7 +170,6 @@ public class RefreshGraphPanel extends JPanel implements MouseListener {
 		dPlotRange = yMax - yMin;
 		System.out.println("Plot range (Ymax-Ymin) = " + dPlotRange);
 
-<<<<<<< HEAD
 		// 2) Determine an initial increment value.
 		if(dPlotRange > 10)
 		{
@@ -180,7 +179,7 @@ public class RefreshGraphPanel extends JPanel implements MouseListener {
 			
 			System.out.println("Initial increment value = " + initialIncrement);
 			String initialIncrementString = String.valueOf(initialIncrement);
-=======
+			
 	  // 2) Determine an initial increment value.
 	  if (dPlotRange > 10)
 	     {
@@ -194,8 +193,7 @@ public class RefreshGraphPanel extends JPanel implements MouseListener {
 	  initialIncrement = plotRange/10;
 	  System.out.println("Initial increment value = " + initialIncrement);
 	  // Please excuse this clumsy "math"!
-	  String initialIncrementString = String.valueOf(initialIncrement);
->>>>>>> e3b643e7df54756d1eefb6576bd4d8e53420f27b
+	  		initialIncrementString = String.valueOf(initialIncrement);
 	  
 			// 3) Find even numbers above and below the initial increment. 
 			String leadingDigit = initialIncrementString.substring(0,1);
@@ -247,7 +245,6 @@ public class RefreshGraphPanel extends JPanel implements MouseListener {
 				return new String[0]; //empty string
 			}
 	  
-<<<<<<< HEAD
 			// 7) Determine if Y scale will be extended to include the 0 point.
 			if ((lowestYscaleValue < 0) && (highestYscaleValue > 0))
 				System.out.println("The Y scale includes the 0 point.");
@@ -366,7 +363,7 @@ public class RefreshGraphPanel extends JPanel implements MouseListener {
 			}
 			return yScalePrintValues;
 		}
-=======
+
 	  // 6) Determine upper Y scale value
 	  numberOfYscaleValues = 1;
 	  for (highestYscaleValue = lowestYscaleValue; highestYscaleValue < yMax; highestYscaleValue+=selectedIncrement)
@@ -405,7 +402,7 @@ public class RefreshGraphPanel extends JPanel implements MouseListener {
 		  yScalePrintValues[i] = Double.toString(lowestYscaleValue + selectedIncrement * i);
 	  }
 	  return yScalePrintValues;
->>>>>>> e3b643e7df54756d1eefb6576bd4d8e53420f27b
+
 	}      
 	
 	@Override
