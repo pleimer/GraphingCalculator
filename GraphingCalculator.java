@@ -160,7 +160,7 @@ public class GraphingCalculator implements Calculator, ActionListener
 						errorDisplay.setBackground(Color.white);
 						try 
 						{
-							if (!expressionEntry.getText().contains("x"))
+							if (!expressionEntry.getText().toLowerCase().contains("x"))
 								throw new Exception("Expression does not contain symbolic x value for graphing");
 							if (Double.parseDouble(deltaXEntry.getText()) < 0)
 								throw new Exception("Delta x value cannot be negative.");
@@ -192,23 +192,6 @@ public class GraphingCalculator implements Calculator, ActionListener
 															CalculateXAxisValues(Double.parseDouble(xValueEntry.getText()), Double.parseDouble(deltaXEntry.getText()), Integer.parseInt(numPtsEntry.getText())),
 															CalculateYAxisValues(Double.parseDouble(xValueEntry.getText()), Double.parseDouble(deltaXEntry.getText()), Integer.parseInt(numPtsEntry.getText())));
 						
-						try
-						{
-						graphPanel	= new RefreshGraphPanel(gc, expressionEntry.getText(),
-															CalculateXAxisValues(Double.parseDouble(xValueEntry.getText()), Double.parseDouble(deltaXEntry.getText())),
-															CalculateYAxisValues(Double.parseDouble(xValueEntry.getText()), Double.parseDouble(deltaXEntry.getText())));
-						} catch(Exception e){
-							errorDisplay.setText(e.toString());
-							expressionEntry.setText("");
-							errorDisplay.setBackground(Color.pink);
-							if(!parStack.isEmpty())
-							{
-								// Clear parentheses stack
-								while(!parStack.isEmpty())
-								parStack.pop();
-							}
-							return;
-						}
 
 						graphPanel.setBackground(Color.white);
 						graphWindow.getContentPane().add(graphPanel, CENTER);

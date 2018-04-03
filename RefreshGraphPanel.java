@@ -36,7 +36,7 @@ public class RefreshGraphPanel extends JPanel implements MouseListener {
 	public RefreshGraphPanel(GraphingCalculator gc,
 							 String		expression,
 							 double[] 	xValues,
-							 double[] 	yValues) throws IllegalArgumentException, Exception {
+							 double[] 	yValues) {
 		
 		this.gc = gc;
 		this.expression = expression;
@@ -152,7 +152,7 @@ public class RefreshGraphPanel extends JPanel implements MouseListener {
 	    }
 	}
 	
-	public String[] calcYAxisPrintValues(double yMin, double yMax) throws Exception{
+	public String[] calcYAxisPrintValues(double yMin, double yMax){
 		
 		double  dPlotRange, dInitialIncrement, dUpperIncrement, 
 	         dLowerIncrement, dSelectedIncrement,
@@ -170,7 +170,6 @@ public class RefreshGraphPanel extends JPanel implements MouseListener {
 		dPlotRange = yMax - yMin;
 		System.out.println("Plot range (Ymax-Ymin) = " + dPlotRange);
 
-<<<<<<< HEAD
 		// 2) Determine an initial increment value.
 		if(dPlotRange > 10)
 		{
@@ -180,22 +179,6 @@ public class RefreshGraphPanel extends JPanel implements MouseListener {
 			
 			System.out.println("Initial increment value = " + initialIncrement);
 			String initialIncrementString = String.valueOf(initialIncrement);
-=======
-	  // 2) Determine an initial increment value.
-	  if (dPlotRange > 10)
-	     {
-		 plotRange = (int)dPlotRange;
-		 System.out.println("Rounded plot range = " + plotRange);
-	     }
-	 else {
-		 throw new Exception("Function range too small to graph. ");
-	     }
-	/*ASSUME*/ // 10 scale values as a starting assumption.
-	  initialIncrement = plotRange/10;
-	  System.out.println("Initial increment value = " + initialIncrement);
-	  // Please excuse this clumsy "math"!
-	  String initialIncrementString = String.valueOf(initialIncrement);
->>>>>>> e3b643e7df54756d1eefb6576bd4d8e53420f27b
 	  
 			// 3) Find even numbers above and below the initial increment. 
 			String leadingDigit = initialIncrementString.substring(0,1);
@@ -241,13 +224,12 @@ public class RefreshGraphPanel extends JPanel implements MouseListener {
 				numberOfYscaleValues++;
 			System.out.println("The highest Y scale value will be " + highestYscaleValue);
 			System.out.println("The number of Y scale click marks will be " + numberOfYscaleValues);
-			if ((numberOfYscaleValues < 5) || (numberOfYscaleValues > 20))
+			/*if ((numberOfYscaleValues < 5) || (numberOfYscaleValues > 20))
 			{
 				System.out.println("Number of Y scale click marks is too few or too many!");
 				return new String[0]; //empty string
-			}
+			}*/
 	  
-<<<<<<< HEAD
 			// 7) Determine if Y scale will be extended to include the 0 point.
 			if ((lowestYscaleValue < 0) && (highestYscaleValue > 0))
 				System.out.println("The Y scale includes the 0 point.");
@@ -330,11 +312,11 @@ public class RefreshGraphPanel extends JPanel implements MouseListener {
 				numberOfYscaleValues++;
 			System.out.println("The highest Y scale value will be " + highestYscaleValue);
 			System.out.println("The number of Y scale click marks will be " + numberOfYscaleValues);
-			if ((numberOfYscaleValues < 5) || (numberOfYscaleValues > 20))
+			/*if ((numberOfYscaleValues < 5) || (numberOfYscaleValues > 20))
 			{
 				System.out.println("Number of Y scale click marks is too few or too many!");
-				return new String[0]; //empty string
-			}
+				//return new String[0]; //empty string
+			}*/
 	  
 			// 7) Determine if Y scale will be extended to include the 0 point.
 			if ((lowestYscaleValue < 0) && (highestYscaleValue > 0))
@@ -366,46 +348,6 @@ public class RefreshGraphPanel extends JPanel implements MouseListener {
 			}
 			return yScalePrintValues;
 		}
-=======
-	  // 6) Determine upper Y scale value
-	  numberOfYscaleValues = 1;
-	  for (highestYscaleValue = lowestYscaleValue; highestYscaleValue < yMax; highestYscaleValue+=selectedIncrement)
-		  numberOfYscaleValues++;
-	  System.out.println("The highest Y scale value will be " + highestYscaleValue);
-	  System.out.println("The number of Y scale click marks will be " + numberOfYscaleValues);
-	  if ((numberOfYscaleValues < 5) || (numberOfYscaleValues > 20))
-	     {
-		 System.out.println("Number of Y scale click marks is too few or too many!");
-		 return new String[0]; //empty string
-	     }
-	  // 7) Determine if Y scale will be extended to include the 0 point.
-	  if ((lowestYscaleValue < 0) && (highestYscaleValue > 0))
-	       System.out.println("The Y scale includes the 0 point.");
-	   else // Y scale does not include 0.
-	     {   //	Should it be extended to include the 0 point?
-	     if ((lowestYscaleValue > 0) && (lowestYscaleValue/selectedIncrement <= 3))
-	        {
-	    	lowestYscaleValue = 0;
-	    	System.out.println("Lower Y scale value adjusted down to 0 to include 0 point. (Additional click marks added.)");
-	        }
-	     if ((highestYscaleValue < 0) && (highestYscaleValue/selectedIncrement <= 3))
-	        {
-	     	highestYscaleValue = 0;
-	    	System.out.println("Upper Y scale value adjusted up to 0 to include 0 point. (Additional click marks added.)");
-	        }
-	     }
-	  int yScaleValue = lowestYscaleValue;
-	  int numValues=0;
-	  while(yScaleValue < highestYscaleValue){
-		   yScaleValue += selectedIncrement;
-		   numValues++;
-	  }
-	  String[] yScalePrintValues = new String[numValues];
-	  for(int i=0; i<numValues;i++) {
-		  yScalePrintValues[i] = Double.toString(lowestYscaleValue + selectedIncrement * i);
-	  }
-	  return yScalePrintValues;
->>>>>>> e3b643e7df54756d1eefb6576bd4d8e53420f27b
 	}      
 	
 	@Override
