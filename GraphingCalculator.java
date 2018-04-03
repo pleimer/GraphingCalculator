@@ -63,13 +63,17 @@ public class GraphingCalculator implements Calculator, ActionListener
 	JTextField      expressionEntry  = new JTextField("Enter an expression here");
 	JTextField      xValueEntry      = new JTextField();
 	JTextField		deltaXEntry		 = new JTextField();
+	JTextField      numPtsEntry      = new JTextField();
 	JLabel		    xValueLabel      = new JLabel("For X =");
 	JLabel			deltaXLabel		 = new JLabel("Delta X: ");
+	JLabel          numPtsLabel      = new JLabel("Num pts: ");
 	JButton         clearButton      = new JButton("Clear");
     JButton         recallButton     = new JButton("Recall");
 
 	/* ---Class Fields--- */
 	private boolean x_used;
+	private boolean error_encountered;
+	private final int DEFAULT_NUM_PTS = 11;
 	private Complex result = new Complex(0, 0);
 	private String  lastExpressionEntered      = "";
 	private String  lastXvalueEntered          = "";														// Will allow us to use Reverse Polish Notation
@@ -94,13 +98,16 @@ public class GraphingCalculator implements Calculator, ActionListener
 			expressionPanel.setLayout(new GridLayout(1, 3));//1,2
 			expressionPanel.add(varPanel);
 			expressionPanel.add(expressionEntry);
-			varPanel.setLayout(new GridLayout(1,4));
+			varPanel.setLayout(new GridLayout(1,6));
 			varPanel.add(deltaXLabel);
 			deltaXLabel.setHorizontalAlignment(JLabel.RIGHT);
 			varPanel.add(deltaXEntry);
 			varPanel.add(xValueLabel);
 			xValueLabel.setHorizontalAlignment(JLabel.RIGHT);
 			varPanel.add(xValueEntry);
+			varPanel.add(numPtsLabel);
+			numPtsLabel.setHorizontalAlignment(JLabel.RIGHT);
+			varPanel.add(numPtsEntry);
 		calculatorWindow.getContentPane().add(resultsScrollP, CENTER);
 			resultsDisplay.setEditable(false);
 			DefaultCaret caret = (DefaultCaret) resultsDisplay.getCaret();
@@ -119,50 +126,13 @@ public class GraphingCalculator implements Calculator, ActionListener
 			@Override
 			public void keyPressed(KeyEvent ke) {
 				if(ke.getKeyCode() == KeyEvent.VK_ENTER) {
-					try
-					{
-						try
-						{
-							calculate(expressionEntry.getText(), xValueEntry.getText());
-							if(expressionEntry.getText().contains("x"))
-								x_used = true;
-						}
-						catch(NumberFormatException nfe)
-						{
-							if(expressionEntry.getText().contains("x"))
-								throw new Exception("Attempted calculation using variable x with invalid or no listed value. Please enter an single, numerical x value in the upper left box.");
-							if(expressionEntry.getText().isEmpty())
-								throw new Exception("No expression entered. Please enter an expression in the upper right box.");
-							calculate(expressionEntry.getText(), "0");
-							x_used = false;
-						}
-						// Clear any persistant results
-						while(!compStack.isEmpty())
-							compStack.remove();
-					}
-					catch(Exception e)
-					{
-						errorDisplay.setText(e.toString());
-						expressionEntry.setText("");
-						errorDisplay.setBackground(Color.pink);
-						if(!parStack.isEmpty())
-						{
-							// Clear parentheses stack
-							while(!parStack.isEmpty())
-							parStack.pop();
-						}
+					calculate(expressionEntry.getText(), xValueEntry.getText());
+					if(error_encountered)
 						return;
-					}
 					
-					errorDisplay.setText("");
-					errorDisplay.setBackground(Color.white);
-					if(result.imag != result.imag || result.real != result.real)
-					{
-						errorDisplay.setText("Error: Division by zero");
-						expressionEntry.setText("");
-						errorDisplay.setBackground(Color.pink);
-						return;
-					}
+					
+					while(!compStack.isEmpty())
+						compStack.remove();
 					
 					if(x_used)
 						if(result.imag != 0)
@@ -188,13 +158,12 @@ public class GraphingCalculator implements Calculator, ActionListener
 						//open new graphing window
 						errorDisplay.setText(""); //just in case other errors were shown before
 						errorDisplay.setBackground(Color.white);
-						try {
-							if (!expressionEntry.getText().contains("x")) {
+						try 
+						{
+							if (!expressionEntry.getText().contains("x"))
 								throw new Exception("Expression does not contain symbolic x value for graphing");
-							}
-							if (Double.parseDouble(deltaXEntry.getText()) < 0) {
+							if (Double.parseDouble(deltaXEntry.getText()) < 0)
 								throw new Exception("Delta x value cannot be negative.");
-							}
 						}
 						catch (Exception e) {
 							errorDisplay.setText(e.toString());
@@ -211,6 +180,17 @@ public class GraphingCalculator implements Calculator, ActionListener
 						
 						//build graph window
 						graphWindow = new JFrame(expressionEntry.getText() + "   Click to get exact points on plot.");
+
+						if(numPtsEntry.getText().trim().equals(""))
+							// Print default 11 points
+							graphPanel	= new RefreshGraphPanel(new GraphingCalculator(0), expressionEntry.getText(),
+															CalculateXAxisValues(Double.parseDouble(xValueEntry.getText()), Double.parseDouble(deltaXEntry.getText()), DEFAULT_NUM_PTS),
+															CalculateYAxisValues(Double.parseDouble(xValueEntry.getText()), Double.parseDouble(deltaXEntry.getText()), DEFAULT_NUM_PTS));
+						else
+							// Print specified number of points
+							graphPanel	= new RefreshGraphPanel(new GraphingCalculator(0), expressionEntry.getText(),
+															CalculateXAxisValues(Double.parseDouble(xValueEntry.getText()), Double.parseDouble(deltaXEntry.getText()), Integer.parseInt(numPtsEntry.getText())),
+															CalculateYAxisValues(Double.parseDouble(xValueEntry.getText()), Double.parseDouble(deltaXEntry.getText()), Integer.parseInt(numPtsEntry.getText())));
 						
 						try
 						{
@@ -229,6 +209,7 @@ public class GraphingCalculator implements Calculator, ActionListener
 							}
 							return;
 						}
+
 						graphPanel.setBackground(Color.white);
 						graphWindow.getContentPane().add(graphPanel, CENTER);
 						
@@ -255,6 +236,9 @@ public class GraphingCalculator implements Calculator, ActionListener
 		});
 	}
 	
+	// GraphingCalculator worker object (no GUI)
+	public GraphingCalculator(int becauseImSpecial) {}
+	
 	@Override
 	public void actionPerformed(ActionEvent ae) {
 		if(ae.getSource() == clearButton)
@@ -271,54 +255,93 @@ public class GraphingCalculator implements Calculator, ActionListener
 		}
 	}
 	
-	public double[] CalculateYAxisValues(double startPoint, double delta) throws Exception {
+	public double[] CalculateYAxisValues(double startPoint, double delta, int numPts) {
 		//compute the y axis values for each x in the given expression
 		//right now, it is returning a test vector
 		//so CHANGE THIS
-		double[] y_vals = new double[12];
-		for(int i=0;i<12;i++) {
+		
+		double[] y_vals = new double[numPts+1];
+		for(int i=0;i<numPts+1;i++) {
 			y_vals[i] = calculate(expressionEntry.getText(), Double.toString(startPoint+i*delta));
 		}
 		return y_vals;
 	}
 	
-	public double[] CalculateXAxisValues(double startPoint, double delta) {
+	public double[] CalculateXAxisValues(double startPoint, double delta, int numPts) {
 		boolean hasZero = false;
 		
-		for (int i=0;i<11;i++) {
+		for (int i=0;i<numPts-1;i++) {
 			if ((startPoint + delta*i)==0) hasZero = true;
 		}
 		
 		if (hasZero) {
-			double[] x_vals = new double[11];
-			for(int i=0;i<11;i++) {
+			double[] x_vals = new double[numPts];
+			for(int i=0;i<numPts;i++) {
 				x_vals[i] = startPoint + delta*i;
 			}
 			return x_vals;
 		}
 		
-		double[] x_vals = new double[10];
-		for(int i=0;i<10;i++) {
+		double[] x_vals = new double[numPts-1];
+		for(int i=0;i<numPts-1;i++) {
 			x_vals[i] = startPoint + delta*i;
 		}
 		return x_vals;
 	}
 
 	@Override
-	public double calculate(String expression, String x) throws Exception
+	public double calculate(String expression, String x)
 	{
-		if(expression.startsWith("+"))
-			throw new Exception("Unary \'+\' not supported. Please consider the delightful unary \'-\' as an alternative.");
-		
 		double tmpResult;
 		
-		// Save expression and x value
+		if(expressionEntry.getText().contains("x"))
+			x_used = true;
+		
+		// Save modified expression and x value
 		expression = expression.toLowerCase();
 		lastExpressionEntered = expression;
 		lastXvalueEntered = String.valueOf(x);
-		expression = expression.replaceAll("\\s+", ""); // Remove all white space from input
+		expression = expression.replaceAll("\\s+", "");              // Remove all white space from input
 		expression = expression.replaceAll("pi", "p");               // Ensure that all variables are a single character
-		parseInput(expression, Double.parseDouble(x));
+		
+		// Run computation, returning value on the complex stack
+		try {
+			try
+			{
+				if(expression.startsWith("+"))
+					throw new Exception("Unary \'+\' not supported. Please consider the delightful unary \'-\' as an alternative.");
+				parseInput(expression, Double.parseDouble(x));
+				if(result.imag != result.imag || result.real != result.real)
+					throw new Exception("Error: DIvision by zero.");
+			}
+			catch(NumberFormatException nfe)
+			{
+				if(expressionEntry.getText().contains("x"))
+					throw new Exception("Attempted calculation using variable x with invalid or no listed value. Please enter an single, numerical x value in the upper left box.");
+				if(expressionEntry.getText().isEmpty())
+					throw new Exception("No expression entered. Please enter an expression in the upper right box.");
+				calculate(expressionEntry.getText(), "0");
+					x_used = false;
+			}	
+		}
+		catch(Exception e)
+		{
+			error_encountered = true;
+			errorDisplay.setText(e.toString());
+			expressionEntry.setText("");
+			errorDisplay.setBackground(Color.pink);
+			System.out.println(e);
+			if(!parStack.isEmpty())
+			{
+				// Clear parentheses stack
+				while(!parStack.isEmpty())
+				parStack.pop();
+			}
+			return 0;
+		}
+		
+		// Return proper result
+		error_encountered = false;
 		result = compStack.remove();
 		if(result.imag == 0)
 			return result.real;
@@ -333,9 +356,9 @@ public class GraphingCalculator implements Calculator, ActionListener
 		// Check for character-based implicit multiplication
 		if(toEvaluateNS.matches("(.*)[a-z&&[^eiprx]](.*)"))
 			throw new Exception("Unrecognized variable used. Please only include variables e, pi, i and x");
-		if(toEvaluateNS.matches("(.*)[0-9|a-z]p(.*)") || toEvaluateNS.matches("(.*)p[0-9|a-z](.*)") || toEvaluateNS.contains("pp")
-		|| toEvaluateNS.matches("(.*)[0-9|a-z]e(.*)") || toEvaluateNS.matches("(.*)e[0-9|a-z](.*)") || toEvaluateNS.contains("ee")
-	    || toEvaluateNS.matches("(.*)[0-9|a-z]x(.*)") || toEvaluateNS.matches("(.*)x[0-9|a-z](.*)") || toEvaluateNS.contains("xx"))
+		if(toEvaluateNS.matches("(.*)[0-9|e|i|p]p(.*)") || toEvaluateNS.matches("(.*)p[0-9|e|i|p](.*)") || toEvaluateNS.contains("pp")
+		|| toEvaluateNS.matches("(.*)[0-9|e|i|p]e(.*)") || toEvaluateNS.matches("(.*)e[0-9|e|i|p](.*)") || toEvaluateNS.contains("ee")
+	    || toEvaluateNS.matches("(.*)[0-9|e|i|p]x(.*)") || toEvaluateNS.matches("(.*)x[0-9|e|i|p](.*)") || toEvaluateNS.contains("xx"))
 			throw new Exception("Implicit multiplication cannot be computed. Please list \'*\' between variables to multiply.");
 		if(toEvaluateNS.matches("(.*)[0-9|a-z]i(.*)") || toEvaluateNS.matches("(.*)i[0-9|a-z](.*)") || toEvaluateNS.contains("ii"))
 			throw new Exception("Implicit multiplication cannot be computed. Please list \'*\' between i and numbers to multiply.");
