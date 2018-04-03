@@ -39,6 +39,9 @@ public class GraphingCalculator implements Calculator, ActionListener
 		}
 	}
 	
+	//for passing to constructor in expressionEntry method
+	GraphingCalculator gc;
+	
 	/* --- Constants --- */
     final String CENTER = "Center";
 	final String TOP    = "North";
@@ -82,6 +85,7 @@ public class GraphingCalculator implements Calculator, ActionListener
 	
 	public GraphingCalculator()
 	{
+		gc = this;
 		calculatorWindow.getContentPane().add(buttonPanel, RIGHT);
 			buttonPanel.setLayout(new GridLayout(2,1));
 			buttonPanel.add(clearButton);
@@ -176,6 +180,7 @@ public class GraphingCalculator implements Calculator, ActionListener
 						
 						//build graph window
 						graphWindow = new JFrame(expressionEntry.getText());
+<<<<<<< HEAD
 						if(numPtsEntry.getText().trim().equals(""))
 							// Print default 11 points
 							graphPanel	= new RefreshGraphPanel(new GraphingCalculator(0), expressionEntry.getText(),
@@ -186,6 +191,26 @@ public class GraphingCalculator implements Calculator, ActionListener
 							graphPanel	= new RefreshGraphPanel(new GraphingCalculator(0), expressionEntry.getText(),
 															CalculateXAxisValues(Double.parseDouble(xValueEntry.getText()), Double.parseDouble(deltaXEntry.getText()), Integer.parseInt(numPtsEntry.getText())),
 															CalculateYAxisValues(Double.parseDouble(xValueEntry.getText()), Double.parseDouble(deltaXEntry.getText()), Integer.parseInt(numPtsEntry.getText())));
+=======
+						
+						try
+						{
+						graphPanel	= new RefreshGraphPanel(gc, expressionEntry.getText(),
+															CalculateXAxisValues(Double.parseDouble(xValueEntry.getText()), Double.parseDouble(deltaXEntry.getText())),
+															CalculateYAxisValues(Double.parseDouble(xValueEntry.getText()), Double.parseDouble(deltaXEntry.getText())));
+						} catch(Exception e){
+							errorDisplay.setText(e.toString());
+							expressionEntry.setText("");
+							errorDisplay.setBackground(Color.pink);
+							if(!parStack.isEmpty())
+							{
+								// Clear parentheses stack
+								while(!parStack.isEmpty())
+								parStack.pop();
+							}
+							return;
+						}
+>>>>>>> e3b643e7df54756d1eefb6576bd4d8e53420f27b
 						graphPanel.setBackground(Color.white);
 						graphWindow.getContentPane().add(graphPanel, CENTER);
 						
@@ -287,7 +312,7 @@ public class GraphingCalculator implements Calculator, ActionListener
 					throw new Exception("Unary \'+\' not supported. Please consider the delightful unary \'-\' as an alternative.");
 				parseInput(expression, Double.parseDouble(x));
 				if(result.imag != result.imag || result.real != result.real)
-					throw new Exception("Error: DIvision by zero.");
+					throw new Exception("Error: Division by zero.");
 			}
 			catch(NumberFormatException nfe)
 			{
