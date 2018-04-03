@@ -191,24 +191,6 @@ public class GraphingCalculator implements Calculator, ActionListener
 							graphPanel	= new RefreshGraphPanel(new GraphingCalculator(0), expressionEntry.getText(),
 															CalculateXAxisValues(Double.parseDouble(xValueEntry.getText()), Double.parseDouble(deltaXEntry.getText()), Integer.parseInt(numPtsEntry.getText())),
 															CalculateYAxisValues(Double.parseDouble(xValueEntry.getText()), Double.parseDouble(deltaXEntry.getText()), Integer.parseInt(numPtsEntry.getText())));
-						
-						try
-						{
-						graphPanel	= new RefreshGraphPanel(gc, expressionEntry.getText(),
-															CalculateXAxisValues(Double.parseDouble(xValueEntry.getText()), Double.parseDouble(deltaXEntry.getText())),
-															CalculateYAxisValues(Double.parseDouble(xValueEntry.getText()), Double.parseDouble(deltaXEntry.getText())));
-						} catch(Exception e){
-							errorDisplay.setText(e.toString());
-							expressionEntry.setText("");
-							errorDisplay.setBackground(Color.pink);
-							if(!parStack.isEmpty())
-							{
-								// Clear parentheses stack
-								while(!parStack.isEmpty())
-								parStack.pop();
-							}
-							return;
-						}
 
 						graphPanel.setBackground(Color.white);
 						graphWindow.getContentPane().add(graphPanel, CENTER);
