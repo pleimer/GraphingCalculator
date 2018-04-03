@@ -210,7 +210,7 @@ public class GraphingCalculator implements Calculator, ActionListener
 						}
 						
 						//build graph window
-						graphWindow = new JFrame(expressionEntry.getText());
+						graphWindow = new JFrame(expressionEntry.getText() + "   Click to get exact points on plot.");
 						
 						try
 						{
@@ -234,8 +234,9 @@ public class GraphingCalculator implements Calculator, ActionListener
 						
 						graphWindow.setLocation(0, 0);
 						graphWindow.setSize(500, 400);
-						graphWindow.setVisible(true);
 						graphWindow.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+						graphWindow.setVisible(true);
+						
 					}
 					
 					expressionEntry.setText("");
