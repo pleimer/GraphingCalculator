@@ -157,112 +157,200 @@ public class RefreshGraphPanel extends JPanel implements MouseListener {
 	
 	public String[] calcYAxisPrintValues(double yMin, double yMax){
 		
-	  double dPlotRange;
+		double  dPlotRange, dInitialIncrement, dUpperIncrement, 
+	         dLowerIncrement, dSelectedIncrement,
+	         dLowestYscaleValue, dHighestYscaleValue;
 	  
-	  int    plotRange, initialIncrement, upperIncrement, 
+		int  plotRange, initialIncrement, upperIncrement, 
 	         lowerIncrement, selectedIncrement, numberOfYscaleValues,
 	         lowestYscaleValue, highestYscaleValue;
-	  String zeros = "0000000000";
+			 
+		boolean smallPlotRange;
+	
+		String zeros = "0000000000";
 	  
-	  // 1) Determine the RANGE to be plotted.
-	  dPlotRange = yMax - yMin;
-	  System.out.println("Plot range (Ymax-Ymin) = " + dPlotRange);
+		// 1) Determine the RANGE to be plotted.
+		dPlotRange = yMax - yMin;
+		System.out.println("Plot range (Ymax-Ymin) = " + dPlotRange);
 
-	  // 2) Determine an initial increment value.
-	  if (dPlotRange > 10)
-	     {
-		 plotRange = (int)dPlotRange;
-		 System.out.println("Rounded plot range = " + plotRange);
-	     }
-	  else
-	     {
-		 System.out.println("Add handling of small plot range!");
-		 return new String[0];
-	     }
-	/*ASSUME*/ // 10 scale values as a starting assumption.
-	  initialIncrement = plotRange/10;
-	  System.out.println("Initial increment value = " + initialIncrement);
-	  // Please excuse this clumsy "math"!
-	  String initialIncrementString = String.valueOf(initialIncrement);
+		// 2) Determine an initial increment value.
+		if(dPlotRange > 10)
+		{
+			plotRange = (int)dPlotRange;
+			initialIncrement = plotRange/xValues.length;
+			System.out.println("Rounded plot range = " + plotRange);
+			
+			System.out.println("Initial increment value = " + initialIncrement);
+			String initialIncrementString = String.valueOf(initialIncrement);
 	  
-	  // 3) Find even numbers above and below the initial increment. 
-	  String leadingDigit = initialIncrementString.substring(0,1);
-	  int leadingNumber = Integer.parseInt(leadingDigit);
-	  int bumpedLeadingNumber = leadingNumber + 1;
-	  String bumpedLeadingDigit = String.valueOf(bumpedLeadingNumber);
-	  String upperIncrementString = bumpedLeadingDigit + zeros.substring(0,initialIncrementString.length()-1);
-	  String lowerIncrementString = leadingDigit       + zeros.substring(0,initialIncrementString.length()-1);
-	  upperIncrement = Integer.parseInt(upperIncrementString);
-	  lowerIncrement = Integer.parseInt(lowerIncrementString);
-	  System.out.println("Upper increment alternative = " + upperIncrement);
-	  System.out.println("Lower increment alternative = " + lowerIncrement);
+			// 3) Find even numbers above and below the initial increment. 
+			String leadingDigit = initialIncrementString.substring(0,1);
+			int leadingNumber = Integer.parseInt(leadingDigit);
+			int bumpedLeadingNumber = leadingNumber + 1;
+			String bumpedLeadingDigit = String.valueOf(bumpedLeadingNumber);
+			String upperIncrementString = bumpedLeadingDigit + zeros.substring(0,initialIncrementString.length()-1);
+			String lowerIncrementString = leadingDigit       + zeros.substring(0,initialIncrementString.length()-1);
+			upperIncrement = Integer.parseInt(upperIncrementString);
+			lowerIncrement = Integer.parseInt(lowerIncrementString);
+			System.out.println("Upper increment alternative = " + upperIncrement);
+			System.out.println("Lower increment alternative = " + lowerIncrement);
 
-	  // 4) Pick the upper or lower even increment depending on which is closest.
-	  int distanceToUpper = upperIncrement - initialIncrement;
-	  int distanceToLower = initialIncrement - lowerIncrement;
-	  if (distanceToUpper > distanceToLower)
-		  selectedIncrement = lowerIncrement;
-	    else
-	      selectedIncrement = upperIncrement;
-	  System.out.println("The closest even increment (and therefore the one chosen) = " + selectedIncrement);
+			// 4) Pick the upper or lower even increment depending on which is closest.
+			int distanceToUpper = upperIncrement - initialIncrement;
+			int distanceToLower = initialIncrement - lowerIncrement;
+			if (distanceToUpper > distanceToLower)
+				selectedIncrement = lowerIncrement;
+			else
+				selectedIncrement = upperIncrement;
+			System.out.println("The closest even increment (and therefore the one chosen) = " + selectedIncrement);
 
-	  // 5) Determine lowest Y scale value
-	  numberOfYscaleValues = 0;
-	  lowestYscaleValue    = 0;
-	  if (yMin < 0)
-	     {
-	     for (; lowestYscaleValue > yMin; lowestYscaleValue-=selectedIncrement)
-	          numberOfYscaleValues++;
-	     }
-	  if (yMin > 0)
-	     {
-		 for (; lowestYscaleValue < yMin; lowestYscaleValue+=selectedIncrement)
-		      numberOfYscaleValues++;
-	     numberOfYscaleValues--;
-	     lowestYscaleValue -= selectedIncrement;
-	     }
-	  System.out.println("The lowest Y scale value will be " + lowestYscaleValue + ")");
+			// 5) Determine lowest Y scale value
+			numberOfYscaleValues = 0;
+			lowestYscaleValue    = 0;
+			if (yMin < 0)
+			{
+				for (; lowestYscaleValue > yMin; lowestYscaleValue-=selectedIncrement)
+					numberOfYscaleValues++;
+			}
+			if (yMin > 0)
+			{
+				for (; lowestYscaleValue < yMin; lowestYscaleValue+=selectedIncrement)
+				numberOfYscaleValues++;
+				numberOfYscaleValues--;
+				lowestYscaleValue -= selectedIncrement;
+			}
+			System.out.println("The lowest Y scale value will be " + lowestYscaleValue + ")");
 	  
+			// 6) Determine upper Y scale value
+			numberOfYscaleValues = 1;
+			for (highestYscaleValue = lowestYscaleValue; highestYscaleValue < yMax; highestYscaleValue+=selectedIncrement)
+				numberOfYscaleValues++;
+			System.out.println("The highest Y scale value will be " + highestYscaleValue);
+			System.out.println("The number of Y scale click marks will be " + numberOfYscaleValues);
+			if ((numberOfYscaleValues < 5) || (numberOfYscaleValues > 20))
+			{
+				System.out.println("Number of Y scale click marks is too few or too many!");
+				return new String[0]; //empty string
+			}
 	  
-	  // 6) Determine upper Y scale value
-	  numberOfYscaleValues = 1;
-	  for (highestYscaleValue = lowestYscaleValue; highestYscaleValue < yMax; highestYscaleValue+=selectedIncrement)
-		  numberOfYscaleValues++;
-	  System.out.println("The highest Y scale value will be " + highestYscaleValue);
-	  System.out.println("The number of Y scale click marks will be " + numberOfYscaleValues);
-	  if ((numberOfYscaleValues < 5) || (numberOfYscaleValues > 20))
-	     {
-		 System.out.println("Number of Y scale click marks is too few or too many!");
-		 return new String[0]; //empty string
-	     }
+			// 7) Determine if Y scale will be extended to include the 0 point.
+			if ((lowestYscaleValue < 0) && (highestYscaleValue > 0))
+				System.out.println("The Y scale includes the 0 point.");
+			else // Y scale does not include 0.
+			{   //	Should it be extended to include the 0 point?
+				if ((lowestYscaleValue > 0) && (lowestYscaleValue/selectedIncrement <= 3))
+				{
+					lowestYscaleValue = 0;
+					System.out.println("Lower Y scale value adjusted down to 0 to include 0 point. (Additional click marks added.)");
+				}
+				if ((highestYscaleValue < 0) && (highestYscaleValue/selectedIncrement <= 3))
+				{
+					highestYscaleValue = 0;
+					System.out.println("Upper Y scale value adjusted up to 0 to include 0 point. (Additional click marks added.)");
+				}	
+			}
+			int yScaleValue = lowestYscaleValue;
+			int numValues=0;
+			while(yScaleValue < highestYscaleValue)
+			{
+				yScaleValue += selectedIncrement;
+				numValues++;
+			}
+			String[] yScalePrintValues = new String[numValues];
+			for(int i=0; i<numValues;i++) 
+			{
+				yScalePrintValues[i] = Double.toString(lowestYscaleValue + selectedIncrement * i);
+			}
+			return yScalePrintValues;
+		}
+		else
+		{
+			dInitialIncrement = dPlotRange/xValues.length;
+			System.out.println("Non-rounded plot range = " + dPlotRange);
+			
+			System.out.println("Initial increment value = " + dInitialIncrement);
+			String initialIncrementString = String.valueOf(dInitialIncrement);
 	  
-	  // 7) Determine if Y scale will be extended to include the 0 point.
-	  if ((lowestYscaleValue < 0) && (highestYscaleValue > 0))
-	       System.out.println("The Y scale includes the 0 point.");
-	   else // Y scale does not include 0.
-	     {   //	Should it be extended to include the 0 point?
-	     if ((lowestYscaleValue > 0) && (lowestYscaleValue/selectedIncrement <= 3))
-	        {
-	    	lowestYscaleValue = 0;
-	    	System.out.println("Lower Y scale value adjusted down to 0 to include 0 point. (Additional click marks added.)");
-	        }
-	     if ((highestYscaleValue < 0) && (highestYscaleValue/selectedIncrement <= 3))
-	        {
-	     	highestYscaleValue = 0;
-	    	System.out.println("Upper Y scale value adjusted up to 0 to include 0 point. (Additional click marks added.)");
-	        }
-	     }
-	  int yScaleValue = lowestYscaleValue;
-	  int numValues=0;
-	  while(yScaleValue < highestYscaleValue){
-		   yScaleValue += selectedIncrement;
-		   numValues++;
-	  }
-	  String[] yScalePrintValues = new String[numValues];
-	  for(int i=0; i<numValues;i++) {
-		  yScalePrintValues[i] = Double.toString(lowestYscaleValue + selectedIncrement * i);
-	  }
-	  return yScalePrintValues;
+			// 3) Find even numbers above and below the initial increment. 
+			String leadingDigit = initialIncrementString.substring(0,1);
+			int leadingNumber = Integer.parseInt(leadingDigit);
+			int bumpedLeadingNumber = leadingNumber + 1;
+			String bumpedLeadingDigit = String.valueOf(bumpedLeadingNumber);
+			String upperIncrementString = zeros.substring(0,initialIncrementString.length()-1) + bumpedLeadingDigit;
+			String lowerIncrementString = leadingDigit       + zeros.substring(0,initialIncrementString.length()-1);
+			upperIncrement = Integer.parseInt(upperIncrementString);
+			lowerIncrement = Integer.parseInt(lowerIncrementString);
+			System.out.println("Upper increment alternative = " + upperIncrement);
+			System.out.println("Lower increment alternative = " + lowerIncrement);
+
+			// 4) Pick the upper or lower even increment depending on which is closest.
+			double distanceToUpper = upperIncrement - dInitialIncrement;
+			double distanceToLower = dInitialIncrement - lowerIncrement;
+			if (distanceToUpper > distanceToLower)
+				selectedIncrement = lowerIncrement;
+			else
+				selectedIncrement = upperIncrement;
+			System.out.println("The closest even increment (and therefore the one chosen) = " + selectedIncrement);
+
+			// 5) Determine lowest Y scale value
+			numberOfYscaleValues = 0;
+			lowestYscaleValue    = 0;
+			if (yMin < 0)
+			{
+				for (; lowestYscaleValue > yMin; lowestYscaleValue-=selectedIncrement)
+					numberOfYscaleValues++;
+			}
+			if (yMin > 0)
+			{
+				for (; lowestYscaleValue < yMin; lowestYscaleValue+=selectedIncrement)
+				numberOfYscaleValues++;
+				numberOfYscaleValues--;
+				lowestYscaleValue -= selectedIncrement;
+			}
+			System.out.println("The lowest Y scale value will be " + lowestYscaleValue + ")");
+	  
+			// 6) Determine upper Y scale value
+			numberOfYscaleValues = 1;
+			for (highestYscaleValue = lowestYscaleValue; highestYscaleValue < yMax; highestYscaleValue+=selectedIncrement)
+				numberOfYscaleValues++;
+			System.out.println("The highest Y scale value will be " + highestYscaleValue);
+			System.out.println("The number of Y scale click marks will be " + numberOfYscaleValues);
+			if ((numberOfYscaleValues < 5) || (numberOfYscaleValues > 20))
+			{
+				System.out.println("Number of Y scale click marks is too few or too many!");
+				return new String[0]; //empty string
+			}
+	  
+			// 7) Determine if Y scale will be extended to include the 0 point.
+			if ((lowestYscaleValue < 0) && (highestYscaleValue > 0))
+				System.out.println("The Y scale includes the 0 point.");
+			else // Y scale does not include 0.
+			{   //	Should it be extended to include the 0 point?
+				if ((lowestYscaleValue > 0) && (lowestYscaleValue/selectedIncrement <= 3))
+				{
+					lowestYscaleValue = 0;
+					System.out.println("Lower Y scale value adjusted down to 0 to include 0 point. (Additional click marks added.)");
+				}
+				if ((highestYscaleValue < 0) && (highestYscaleValue/selectedIncrement <= 3))
+				{
+					highestYscaleValue = 0;
+					System.out.println("Upper Y scale value adjusted up to 0 to include 0 point. (Additional click marks added.)");
+				}	
+			}
+			int yScaleValue = lowestYscaleValue;
+			int numValues=0;
+			while(yScaleValue < highestYscaleValue)
+			{
+				yScaleValue += selectedIncrement;
+				numValues++;
+			}
+			String[] yScalePrintValues = new String[numValues];
+			for(int i=0; i<numValues;i++) 
+			{
+				yScalePrintValues[i] = Double.toString(lowestYscaleValue + selectedIncrement * i);
+			}
+			return yScalePrintValues;
+		}
 	}      
 	
 	@Override
