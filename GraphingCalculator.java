@@ -65,7 +65,7 @@ public class GraphingCalculator implements Calculator, ActionListener
 	JTextField		deltaXEntry		 = new JTextField();
 	JTextField      numPtsEntry      = new JTextField();
 	JLabel		    xValueLabel      = new JLabel("For X =");
-	JLabel			deltaXLabel		 = new JLabel("Delta X: ");
+	JLabel			deltaXLabel		 = new JLabel("X increment");
 	JLabel          numPtsLabel      = new JLabel("Num pts: ");
 	JButton         clearButton      = new JButton("Clear");
     JButton         recallButton     = new JButton("Recall");
@@ -294,8 +294,6 @@ public class GraphingCalculator implements Calculator, ActionListener
 				if(expression.startsWith("+"))
 					throw new Exception("Unary \'+\' not supported. Please consider the delightful unary \'-\' as an alternative.");
 				parseInput(expression, Double.parseDouble(x));
-				if(result.imag != result.imag || result.real != result.real)
-					throw new Exception("Error: DIvision by zero.");
 			}
 			catch(NumberFormatException nfe)
 			{
@@ -581,7 +579,7 @@ public class GraphingCalculator implements Calculator, ActionListener
 
 	public static void main(String[] args) throws Exception
 	{
-		System.out.println("ExpressionCalculator.java was created by Paul Leimer and Sam Messick for ECE 309\nExpressions can be evaluated with complex numbers and a unary minus character as well\nso give it a go!");
+		System.out.println("GraphingCalculator.java was created by Paul Leimer and Sam Messick for ECE 309\nExpressions can be evaluated with complex numbers and a unary minus character as well\n as graphed using the variable x.\n\n**Support included for green axes, the 0 point and many x increments.");
 		new GraphingCalculator();
 	}
 }

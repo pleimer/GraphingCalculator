@@ -45,9 +45,20 @@ public class RefreshGraphPanel extends JPanel implements MouseListener {
 		this.deltaX  = xValues[1] - xValues [0];
 		
 		  //find min and max
-		  yMax = yValues[0];
-		  yMin = yValues[0];
-		  for(int i=0;i<yValues.length; i++) {
+		int i = 0;
+		while(yValues[i] != yValues[i] && i<yValues.length)
+			i++;
+		if(yValues[i] != yValues[i])
+		{
+			yMax = 0;
+			yMin = 0;
+		}
+		else		
+		{
+		  yMax = yValues[i];
+		  yMin = yValues[i];
+		}
+		  for(;i<yValues.length; i++) {
 			  if(yValues[i] > yMax) yMax = yValues[i];
 			  if(yValues[i] < yMin) yMin = yValues[i];
 		  }
@@ -146,6 +157,8 @@ public class RefreshGraphPanel extends JPanel implements MouseListener {
 	    //graph points
 	    g.setColor(Color.red);
 	    for(int i=0; i < xValues.length; i++) {
+			if(functPointLocations[i][1] != functPointLocations[i][1])
+				continue;
 	    	g.drawOval(functPointLocations[i][0],functPointLocations[i][1],2,2);//draw dots
 	    	if(i+1 < xValues.length)
 	    		g.drawLine(functPointLocations[i][0]+1, functPointLocations[i][1]+1, functPointLocations[i + 1][0]+1, functPointLocations[i+1][1]+1);
@@ -171,8 +184,6 @@ public class RefreshGraphPanel extends JPanel implements MouseListener {
 		System.out.println("Plot range (Ymax-Ymin) = " + dPlotRange);
 
 		// 2) Determine an initial increment value.
-		if(dPlotRange > 10)
-		{
 			plotRange = (int)dPlotRange;
 			initialIncrement = plotRange/xValues.length;
 			System.out.println("Rounded plot range = " + plotRange);
@@ -195,10 +206,12 @@ public class RefreshGraphPanel extends JPanel implements MouseListener {
 			// 4) Pick the upper or lower even increment depending on which is closest.
 			int distanceToUpper = upperIncrement - initialIncrement;
 			int distanceToLower = initialIncrement - lowerIncrement;
-			if (distanceToUpper > distanceToLower)
+			selectedIncrement = upperIncrement;
+			/*if (distanceToUpper > distanceToLower)
 				selectedIncrement = lowerIncrement;
 			else
 				selectedIncrement = upperIncrement;
+			*/
 			System.out.println("The closest even increment (and therefore the one chosen) = " + selectedIncrement);
 
 			// 5) Determine lowest Y scale value
@@ -259,95 +272,6 @@ public class RefreshGraphPanel extends JPanel implements MouseListener {
 				yScalePrintValues[i] = Double.toString(lowestYscaleValue + selectedIncrement * i);
 			}
 			return yScalePrintValues;
-		}
-		else
-		{
-			dInitialIncrement = dPlotRange/xValues.length;
-			System.out.println("Non-rounded plot range = " + dPlotRange);
-			
-			System.out.println("Initial increment value = " + dInitialIncrement);
-			String initialIncrementString = String.valueOf(dInitialIncrement);
-	  
-			// 3) Find even numbers above and below the initial increment. 
-			String leadingDigit = initialIncrementString.substring(0,1);
-			int leadingNumber = Integer.parseInt(leadingDigit);
-			int bumpedLeadingNumber = leadingNumber + 1;
-			String bumpedLeadingDigit = String.valueOf(bumpedLeadingNumber);
-			String upperIncrementString = zeros.substring(0,initialIncrementString.length()-1) + bumpedLeadingDigit;
-			String lowerIncrementString = leadingDigit       + zeros.substring(0,initialIncrementString.length()-1);
-			upperIncrement = Integer.parseInt(upperIncrementString);
-			lowerIncrement = Integer.parseInt(lowerIncrementString);
-			System.out.println("Upper increment alternative = " + upperIncrement);
-			System.out.println("Lower increment alternative = " + lowerIncrement);
-
-			// 4) Pick the upper or lower even increment depending on which is closest.
-			double distanceToUpper = upperIncrement - dInitialIncrement;
-			double distanceToLower = dInitialIncrement - lowerIncrement;
-			if (distanceToUpper > distanceToLower)
-				selectedIncrement = lowerIncrement;
-			else
-				selectedIncrement = upperIncrement;
-			System.out.println("The closest even increment (and therefore the one chosen) = " + selectedIncrement);
-
-			// 5) Determine lowest Y scale value
-			numberOfYscaleValues = 0;
-			lowestYscaleValue    = 0;
-			if (yMin < 0)
-			{
-				for (; lowestYscaleValue > yMin; lowestYscaleValue-=selectedIncrement)
-					numberOfYscaleValues++;
-			}
-			if (yMin > 0)
-			{
-				for (; lowestYscaleValue < yMin; lowestYscaleValue+=selectedIncrement)
-				numberOfYscaleValues++;
-				numberOfYscaleValues--;
-				lowestYscaleValue -= selectedIncrement;
-			}
-			System.out.println("The lowest Y scale value will be " + lowestYscaleValue + ")");
-	  
-			// 6) Determine upper Y scale value
-			numberOfYscaleValues = 1;
-			for (highestYscaleValue = lowestYscaleValue; highestYscaleValue < yMax; highestYscaleValue+=selectedIncrement)
-				numberOfYscaleValues++;
-			System.out.println("The highest Y scale value will be " + highestYscaleValue);
-			System.out.println("The number of Y scale click marks will be " + numberOfYscaleValues);
-			/*if ((numberOfYscaleValues < 5) || (numberOfYscaleValues > 20))
-			{
-				System.out.println("Number of Y scale click marks is too few or too many!");
-				//return new String[0]; //empty string
-			}*/
-	  
-			// 7) Determine if Y scale will be extended to include the 0 point.
-			if ((lowestYscaleValue < 0) && (highestYscaleValue > 0))
-				System.out.println("The Y scale includes the 0 point.");
-			else // Y scale does not include 0.
-			{   //	Should it be extended to include the 0 point?
-				if ((lowestYscaleValue > 0) && (lowestYscaleValue/selectedIncrement <= 3))
-				{
-					lowestYscaleValue = 0;
-					System.out.println("Lower Y scale value adjusted down to 0 to include 0 point. (Additional click marks added.)");
-				}
-				if ((highestYscaleValue < 0) && (highestYscaleValue/selectedIncrement <= 3))
-				{
-					highestYscaleValue = 0;
-					System.out.println("Upper Y scale value adjusted up to 0 to include 0 point. (Additional click marks added.)");
-				}	
-			}
-			int yScaleValue = lowestYscaleValue;
-			int numValues=0;
-			while(yScaleValue < highestYscaleValue)
-			{
-				yScaleValue += selectedIncrement;
-				numValues++;
-			}
-			String[] yScalePrintValues = new String[numValues];
-			for(int i=0; i<numValues;i++) 
-			{
-				yScalePrintValues[i] = Double.toString(lowestYscaleValue + selectedIncrement * i);
-			}
-			return yScalePrintValues;
-		}
 	}      
 	
 	@Override
