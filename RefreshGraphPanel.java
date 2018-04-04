@@ -64,10 +64,6 @@ public class RefreshGraphPanel extends JPanel implements MouseListener {
 		  }
 		
 		this.yPrintValues = calcYAxisPrintValues(yMin, yMax);
-		for(String item: yPrintValues) {
-			System.out.println(item);
-		}
-		
 		
 		this.functPointLocations = new int[xValues.length][yValues.length];
 		
@@ -159,9 +155,11 @@ public class RefreshGraphPanel extends JPanel implements MouseListener {
 	    for(int i=0; i < xValues.length; i++) {
 			if(functPointLocations[i][1] != functPointLocations[i][1])
 				continue;
-	    	g.drawOval(functPointLocations[i][0],functPointLocations[i][1],2,2);//draw dots
-	    	if(i+1 < xValues.length)
-	    		g.drawLine(functPointLocations[i][0]+1, functPointLocations[i][1]+1, functPointLocations[i + 1][0]+1, functPointLocations[i+1][1]+1);
+	    	if(!Double.isNaN(yValues[i])) {
+	    		g.drawOval(functPointLocations[i][0],functPointLocations[i][1],2,2);//draw dots
+		    	if(i+1 < xValues.length)
+		    		g.drawLine(functPointLocations[i][0]+1, functPointLocations[i][1]+1, functPointLocations[i + 1][0]+1, functPointLocations[i+1][1]+1);
+	    	}
 	    }
 	}
 	

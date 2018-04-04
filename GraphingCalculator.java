@@ -126,6 +126,9 @@ public class GraphingCalculator implements Calculator, ActionListener
 			@Override
 			public void keyPressed(KeyEvent ke) {
 				if(ke.getKeyCode() == KeyEvent.VK_ENTER) {
+					lastExpressionEntered = expressionEntry.getText();
+					lastXvalueEntered = xValueEntry.getText();
+					
 					calculate(expressionEntry.getText(), xValueEntry.getText());
 					if(error_encountered)
 						return;
@@ -227,6 +230,8 @@ public class GraphingCalculator implements Calculator, ActionListener
 		if(ae.getSource() == clearButton)
 		{
 			xValueEntry.setText("");
+			numPtsEntry.setText("");
+			deltaXEntry.setText("");
 			expressionEntry.setText("");
 			expressionEntry.requestFocusInWindow();
 		}
@@ -282,8 +287,9 @@ public class GraphingCalculator implements Calculator, ActionListener
 		
 		// Save modified expression and x value
 		expression = expression.toLowerCase();
-		lastExpressionEntered = expression;
-		lastXvalueEntered = String.valueOf(x);
+		//lastExpressionEntered = expression;
+		//lastXvalueEntered = String.valueOf(x);
+		System.out.println(lastXvalueEntered);
 		expression = expression.replaceAll("\\s+", "");              // Remove all white space from input
 		expression = expression.replaceAll("pi", "p");               // Ensure that all variables are a single character
 		
