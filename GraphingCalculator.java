@@ -162,7 +162,7 @@ public class GraphingCalculator implements Calculator, ActionListener
 						{
 							if (!expressionEntry.getText().toLowerCase().contains("x"))
 								throw new Exception("Expression does not contain symbolic x value for graphing");
-							if (Double.parseDouble(deltaXEntry.getText()) < 0)
+							if (Double.parseDouble(deltaXEntry.getText()) <= 0)
 								throw new Exception("Delta x value cannot be negative.");
 						}
 						catch (Exception e) {
