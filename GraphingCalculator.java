@@ -289,7 +289,6 @@ public class GraphingCalculator implements Calculator, ActionListener
 		expression = expression.toLowerCase();
 		//lastExpressionEntered = expression;
 		//lastXvalueEntered = String.valueOf(x);
-		System.out.println(lastXvalueEntered);
 		expression = expression.replaceAll("\\s+", "");              // Remove all white space from input
 		expression = expression.replaceAll("pi", "p");               // Ensure that all variables are a single character
 		
